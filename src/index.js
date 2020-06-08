@@ -15,6 +15,15 @@ const isLocalhost = () => Boolean(
     )
 )
 
+const addEventOrExecute = (evt, f) => {
+  if (document.readyState === "complete") {
+    f();
+  }
+  else {
+    window.addEventListener(evt, f);
+  }
+};
+
 let waitWindowLoad
 // https://github.com/yyx990803/register-service-worker/pull/33#discussion_r394181861
 if (typeof window !== 'undefined') {
@@ -23,9 +32,9 @@ if (typeof window !== 'undefined') {
   // worker support (in that case it would do nothing), there's a chance that
   // `Promise` does not exist. So we must check for its existence first.
   if (typeof Promise !== 'undefined') {
-    waitWindowLoad = new Promise(resolve => window.addEventListener('load', resolve))
+    waitWindowLoad = new Promise(resolve => addEventOrExecute('load', resolve))
   } else {
-    waitWindowLoad = { then: (cb) => window.addEventListener('load', cb) }
+    waitWindowLoad = { then: (cb) => addEventOrExecute('load', cb) }
   }
 }
 
